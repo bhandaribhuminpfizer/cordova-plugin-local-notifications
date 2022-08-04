@@ -29,6 +29,13 @@ import android.app.KeyguardManager;
 import android.content.Context;
 import android.util.Pair;
 import android.view.View;
+// Notification
+
+import android.app.NotificationManager;
+import android.app.NotificationChannel;
+import android.app.PendingIntent;
+import androidx.core.app.NotificationCompat;
+import android.content.Intent;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -172,10 +179,56 @@ public class LocalNotification extends CordovaPlugin {
                 if (action.equals("notifications")) {
                     notifications(args, command);
                 }
+                else
+                if (action.equals("dummyNotifications")) {
+                    dummyNotifications(command);
+                }
             }
         });
 
         return true;
+    }
+
+
+
+
+    /**
+     * Cancel all scheduled notifications.
+     *
+     * @param command The callback context used when calling back into
+     *                JavaScript.
+     */
+    private void dummyNotifications(CallbackContext command) {
+       
+        fireEvent("dummyNotifications");
+        NotificationManager mNotificationManager;
+        NotificationCompat.Builder mBuilder;
+       String NOTIFICATION_CHANNEL_ID = "10004457";
+        String notificationMsg = "Test";
+        String notificationTitle = "Mdd";
+
+        Intent intentToLaunch = new Intent(context, TriggerReceiver.class);
+
+        intentToLaunch.putExtra("Callfrom", "reminders");
+        final PendingIntent resultPendingIntent = PendingIntent.getActivity(context,
+                0, intentToLaunch, PendingIntent.FLAG_IMMUTABLE);
+
+        mBuilder = new NotificationCompat.Builder(context,NOTIFICATION_CHANNEL_ID);
+        
+        mBuilder.setContentIntent(resultPendingIntent);
+
+        mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
+        {
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, "NOTIFICATION_CHANNEL_NAME", importance);
+            assert mNotificationManager != null;
+            mBuilder.setChannelId(NOTIFICATION_CHANNEL_ID);
+            mNotificationManager.createNotificationChannel(notificationChannel);
+        }
+
+        command.success();
     }
 
     /**
