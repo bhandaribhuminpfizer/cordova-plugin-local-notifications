@@ -206,7 +206,7 @@ public class LocalNotification extends CordovaPlugin {
        String NOTIFICATION_CHANNEL_ID = "10004457";
         String notificationMsg = "Test";
         String notificationTitle = "Mdd";
-
+        Context context =  cordova.getActivity().getApplicationContext();;
         Intent intentToLaunch = new Intent(context, TriggerReceiver.class);
 
         intentToLaunch.putExtra("Callfrom", "reminders");
