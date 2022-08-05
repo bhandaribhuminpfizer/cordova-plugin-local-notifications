@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import de.appplant.cordova.plugin.localnotification.TriggerReceiver;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -96,6 +97,8 @@ public final class Notification {
 
     // Builder with full configuration
     private final NotificationCompat.Builder builder;
+    // Receiver to handle the trigger event
+    private Class<?> receiver = TriggerReceiver.class;
 
     /**
      * Constructor
@@ -184,6 +187,8 @@ public final class Notification {
         List<Pair<Date, Intent>> intents = new ArrayList<Pair<Date, Intent>>();
         Set<String> ids                  = new ArraySet<String>();
         AlarmManager mgr                 = getAlarmMgr();
+
+        this.receiver = receiver;
 
         cancelScheduledAlarms();
 
@@ -311,7 +316,8 @@ public final class Notification {
             return;
 
         for (String action : actions) {
-            Intent intent = new Intent(action);
+            Intent intent = new Intent(context, this.receiver)
+                    .setAction(action);
 
             PendingIntent pi = PendingIntent.getBroadcast(
                     context, 0, intent, 0);
@@ -347,6 +353,8 @@ public final class Notification {
     void update (JSONObject updates, Class<?> receiver) {
         mergeJSONObjects(updates);
         persist(null);
+
+        this.receiver = receiver;
 
         if (getType() != Type.TRIGGERED)
             return;

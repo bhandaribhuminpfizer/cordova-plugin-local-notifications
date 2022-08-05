@@ -451,7 +451,12 @@ cordova.plugins.notification.local.requestIgnoreBatteryOptimizations(function (g
 ```
 
 The request method here will work one of two ways.
-1. If you have the REQUEST_IGNORE_BATTERY_OPTIMIZATIONS permission defined in the manifest, it will use ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS to explicitly ignore battery optimizations for this app.  This is the best overall user experience, but the REQUEST_IGNORE_BATTERY_OPTIMIZATIONS permission seems to be frowned upon and can get your app banned. This plugin does not have this permission in plugin.xml for this reason, so you will need to use the cordova-custom-config plugin to add it to your config.xml
+1. If you have the REQUEST_IGNORE_BATTERY_OPTIMIZATIONS permission defined in the manifest, it will use ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS to explicitly ignore battery optimizations for this app.  This is the best overall user experience, but the REQUEST_IGNORE_BATTERY_OPTIMIZATIONS permission seems to be frowned upon and can get your app banned. This plugin does not have this permission in plugin.xml for this reason, so you will need to use the cordova-custom-config plugin to add it to your config.xml. Alternatively, you can  use the edit-config tag in the platform section of the config.xml.
+```xml
+<edit-config file="AndroidManifest.xml" mode="merge" target="/manifest/uses-permission" xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+</edit-config>
+```
 2. If you do not have REQUEST_IGNORE_BATTERY_OPTIMIZATIONS requested, it will launch ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS to show a list of all applications.  You will want to put some sort of instructions prior to this to walk the user through this.  Also, this action doesn't exist on all Android devices (is missing on Samsung phones), which will make this method simply return false if it can't start the activity.
 
 
