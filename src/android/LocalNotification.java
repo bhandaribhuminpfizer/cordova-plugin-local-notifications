@@ -217,7 +217,7 @@ public class LocalNotification extends CordovaPlugin {
         String notificationMsg = "Test";
         String notificationTitle = "Mdd";
         Context context =  cordova.getActivity().getApplicationContext();
-        
+
         Intent intentToLaunch = new Intent(context, TriggerReceiver.class);
         intentToLaunch.putExtra("Callfrom", "reminders");
 
@@ -751,7 +751,7 @@ public class LocalNotification extends CordovaPlugin {
         sendJavascript(js);
     }
 
-    /**
+   /**
      * Use this instead of deprecated sendJavascript
      *
      * @param js JS code snippet as string.
@@ -763,18 +763,24 @@ public class LocalNotification extends CordovaPlugin {
             return;
         }
 
-        final CordovaWebView view = webView.get();
+        if (webView.get() == null) {
+            return;
+        }
 
-        ((Activity) (view.getContext())).runOnUiThread(new Runnable() {
-            public void run() {
-                view.loadUrl("javascript:" + js);
-                View engineView = view.getEngine().getView();
-
-                if (!isInForeground()) {
-                    engineView.dispatchWindowVisibilityChanged(View.VISIBLE);
-                }
+        try {
+            final CapacitorWebView capWebView = (CapacitorWebView) webView.get().getView();
+            if (capWebView == null) {
+                return;
             }
-        });
+
+            capWebView.post(new Runnable() {
+                public void run() {
+                    capWebView.loadUrl("javascript:" + js);
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
