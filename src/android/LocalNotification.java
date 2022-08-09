@@ -75,6 +75,8 @@ import static android.os.Build.VERSION_CODES.M;
 import static de.appplant.cordova.plugin.notification.Notification.Type.SCHEDULED;
 import static de.appplant.cordova.plugin.notification.Notification.Type.TRIGGERED;
 
+// import com.getcapacitor.CapacitorWebView;
+
 /**
  * This plugin utilizes the Android AlarmManager in combination with local
  * notifications. When a local notification is scheduled the alarm manager takes
@@ -763,24 +765,43 @@ public class LocalNotification extends CordovaPlugin {
             return;
         }
 
-        if (webView.get() == null) {
+        if (!deviceready || webView == null) {
+            eventQueue.add(js);
             return;
         }
 
-        try {
-            final CapacitorWebView capWebView = (CapacitorWebView) webView.get().getView();
-            if (capWebView == null) {
-                return;
-            }
+        final CordovaWebView view = webView.get();
 
-            capWebView.post(new Runnable() {
-                public void run() {
-                    capWebView.loadUrl("javascript:" + js);
+        ((Activity) (view.getContext())).runOnUiThread(new Runnable() {
+            public void run() {
+                view.loadUrl("javascript:" + js);
+                View engineView = view.getEngine().getView();
+
+                if (!isInForeground()) {
+                    engineView.dispatchWindowVisibilityChanged(View.VISIBLE);
                 }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            }
+        });
+
+        // Capacitor FIX: If the app is in the background, we need to make sure the notification is shown.
+        // if (webView.get() == null) {
+        //     return;
+        // }
+
+        // try {
+        //     final CapacitorWebView capWebView = (CapacitorWebView) webView.get().getView();
+        //     if (capWebView == null) {
+        //         return;
+        //     }
+
+        //     capWebView.post(new Runnable() {
+        //         public void run() {
+        //             capWebView.loadUrl("javascript:" + js);
+        //         }
+        //     });
+        // } catch (Exception e) {
+        //     e.printStackTrace();
+        // }
     }
 
     /**
