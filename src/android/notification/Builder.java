@@ -35,6 +35,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.Paint;
 import android.graphics.Canvas;
 
@@ -43,6 +44,7 @@ import java.util.Random;
 
 import de.appplant.cordova.plugin.notification.action.Action;
 
+import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
 import static de.appplant.cordova.plugin.notification.Notification.EXTRA_UPDATE;
 
 /**
@@ -201,11 +203,7 @@ public final class Builder {
 
         int reqCode = random.nextInt();
         // request code and flags not added for demo purposes
-        int flags = PendingIntent.FLAG_UPDATE_CURRENT;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-            flags = PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_UPDATE_CURRENT;
-        }
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, reqCode, intent, flags);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, reqCode, intent, FLAG_UPDATE_CURRENT);
 
         builder.setFullScreenIntent(pendingIntent, true);
     }
@@ -228,14 +226,14 @@ public final class Builder {
         final int color = Color.RED;
         final Paint paint = new Paint();
         final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
-        // final RectF rectF = new RectF(rect);
+        final RectF rectF = new RectF(rect);
 
         paint.setAntiAlias(true);
         canvas.drawARGB(0, 0, 0, 0);
         paint.setColor(color);
-        float cx = bitmap.getWidth() / 2.0f;
-        float cy = bitmap.getHeight() / 2.0f;
-        float radius = Math.min(cx, cy);
+        float cx = bitmap.getWidth() / 2;
+        float cy = bitmap.getHeight() / 2;
+        float radius = cx < cy ? cx : cy;
         canvas.drawCircle(cx, cy, radius, paint);
 
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
@@ -400,13 +398,8 @@ public final class Builder {
 
         int reqCode = random.nextInt();
 
-        int flags = PendingIntent.FLAG_UPDATE_CURRENT;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-            flags = PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_UPDATE_CURRENT;
-        }
-
         PendingIntent deleteIntent = PendingIntent.getBroadcast(
-                context, reqCode, intent, flags);
+                context, reqCode, intent, FLAG_UPDATE_CURRENT);
 
         builder.setDeleteIntent(deleteIntent);
     }
@@ -434,13 +427,8 @@ public final class Builder {
 
         int reqCode = random.nextInt();
 
-        int flags = PendingIntent.FLAG_UPDATE_CURRENT;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-            flags = PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_UPDATE_CURRENT;
-        }
-
         PendingIntent contentIntent = PendingIntent.getService(
-                context, reqCode, intent, flags);
+                context, reqCode, intent, FLAG_UPDATE_CURRENT);
 
         builder.setContentIntent(contentIntent);
     }
@@ -489,13 +477,8 @@ public final class Builder {
 
         int reqCode = random.nextInt();
 
-        int flags = PendingIntent.FLAG_UPDATE_CURRENT;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-            flags = PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_UPDATE_CURRENT;
-        }
-
         return PendingIntent.getService(
-                context, reqCode, intent, flags);
+                context, reqCode, intent, FLAG_UPDATE_CURRENT);
     }
 
     /**

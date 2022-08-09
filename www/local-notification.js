@@ -651,7 +651,7 @@ exports._mergeWithDefaults = function (options) {
 
     options.meta = {
         plugin:  'cordova-plugin-local-notification',
-        version: '0.9-beta.5'
+        version: '0.9-beta.4'
     };
 
     return options;

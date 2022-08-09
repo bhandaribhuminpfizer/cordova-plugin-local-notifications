@@ -159,19 +159,6 @@ static NSInteger WEEKDAYS[8] = { 0, 2, 3, 4, 5, 6, 7, 1 };
 }
 
 /**
- * The thread group of the notification.
- *
- * @return [ NSString* ]
- */
-- (NSString*) group
-{
-    id group = dict[@"group"];
-
-    return ([group isKindOfClass:NSString.class]) ? group : kAPPGeneralCategory;
-}
-
-
-/**
  * The sound file for the notification.
  *
  * @return [ UNNotificationSound* ]

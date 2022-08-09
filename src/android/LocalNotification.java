@@ -75,8 +75,6 @@ import static android.os.Build.VERSION_CODES.M;
 import static de.appplant.cordova.plugin.notification.Notification.Type.SCHEDULED;
 import static de.appplant.cordova.plugin.notification.Notification.Type.TRIGGERED;
 
-// import com.getcapacitor.CapacitorWebView;
-
 /**
  * This plugin utilizes the Android AlarmManager in combination with local
  * notifications. When a local notification is scheduled the alarm manager takes
@@ -219,7 +217,7 @@ public class LocalNotification extends CordovaPlugin {
         String notificationMsg = "Test";
         String notificationTitle = "Mdd";
         Context context =  cordova.getActivity().getApplicationContext();
-
+        
         Intent intentToLaunch = new Intent(context, TriggerReceiver.class);
         intentToLaunch.putExtra("Callfrom", "reminders");
 
@@ -753,17 +751,12 @@ public class LocalNotification extends CordovaPlugin {
         sendJavascript(js);
     }
 
-   /**
+    /**
      * Use this instead of deprecated sendJavascript
      *
      * @param js JS code snippet as string.
      */
     private static synchronized void sendJavascript(final String js) {
-
-        if (!deviceready || webView == null) {
-            eventQueue.add(js);
-            return;
-        }
 
         if (!deviceready || webView == null) {
             eventQueue.add(js);
@@ -782,26 +775,6 @@ public class LocalNotification extends CordovaPlugin {
                 }
             }
         });
-
-        // Capacitor FIX: If the app is in the background, we need to make sure the notification is shown.
-        // if (webView.get() == null) {
-        //     return;
-        // }
-
-        // try {
-        //     final CapacitorWebView capWebView = (CapacitorWebView) webView.get().getView();
-        //     if (capWebView == null) {
-        //         return;
-        //     }
-
-        //     capWebView.post(new Runnable() {
-        //         public void run() {
-        //             capWebView.loadUrl("javascript:" + js);
-        //         }
-        //     });
-        // } catch (Exception e) {
-        //     e.printStackTrace();
-        // }
     }
 
     /**

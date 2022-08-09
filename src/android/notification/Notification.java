@@ -45,7 +45,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
-import de.appplant.cordova.plugin.localnotification.TriggerReceiver;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -55,6 +54,7 @@ import androidx.core.app.NotificationCompat;
 
 import static android.app.AlarmManager.RTC;
 import static android.app.AlarmManager.RTC_WAKEUP;
+import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.M;
 import static androidx.core.app.NotificationCompat.PRIORITY_HIGH;
@@ -96,8 +96,6 @@ public final class Notification {
 
     // Builder with full configuration
     private final NotificationCompat.Builder builder;
-    // Receiver to handle the trigger event
-    private Class<?> receiver = TriggerReceiver.class;
 
     /**
      * Constructor
@@ -187,8 +185,6 @@ public final class Notification {
         Set<String> ids                  = new ArraySet<String>();
         AlarmManager mgr                 = getAlarmMgr();
 
-        this.receiver = receiver;
-
         cancelScheduledAlarms();
 
         do {
@@ -229,12 +225,8 @@ public final class Notification {
             if (!date.after(new Date()) && trigger(intent, receiver))
                 continue;
 
-            int flags = PendingIntent.FLAG_UPDATE_CURRENT;
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-                flags = PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_UPDATE_CURRENT;
-            }
             PendingIntent pi = PendingIntent.getBroadcast(
-                    context, 0, intent, flags);
+                    context, 0, intent, FLAG_UPDATE_CURRENT);
 
             try {
                 switch (options.getPrio()) {
@@ -319,16 +311,10 @@ public final class Notification {
             return;
 
         for (String action : actions) {
-            Intent intent = new Intent(context, this.receiver)
-                    .setAction(action);
-
-            int flags = PendingIntent.FLAG_CANCEL_CURRENT;
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-                flags = PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_CANCEL_CURRENT;
-            }
+            Intent intent = new Intent(action);
 
             PendingIntent pi = PendingIntent.getBroadcast(
-                    context, 0, intent, flags);
+                    context, 0, intent, 0);
 
             if (pi != null) {
                 getAlarmMgr().cancel(pi);
@@ -361,8 +347,6 @@ public final class Notification {
     void update (JSONObject updates, Class<?> receiver) {
         mergeJSONObjects(updates);
         persist(null);
-
-        this.receiver = receiver;
 
         if (getType() != Type.TRIGGERED)
             return;

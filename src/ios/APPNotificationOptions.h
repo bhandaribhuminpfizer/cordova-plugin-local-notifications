@@ -26,7 +26,6 @@
 @property (readonly, getter=id)            NSNumber*            id;
 @property (readonly, getter=identifier)    NSString*            identifier;
 @property (readonly, getter=actionGroupId) NSString*            actionGroupId;
-@property (readonly, getter=group)         NSString*            group;
 @property (readonly, getter=title)         NSString*            title;
 @property (readonly, getter=subtitle)      NSString*            subtitle;
 @property (readonly, getter=badge)         NSNumber*            badge;
